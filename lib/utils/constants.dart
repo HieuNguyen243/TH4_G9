@@ -1,3 +1,4 @@
 class AppConstants {
-  // TODO: Define constants like API keys, padding, etc.
+  static const String baseUrl = 'https://fakestoreapi.com';
+  static const String productsEndpoint = '/products';
 }
