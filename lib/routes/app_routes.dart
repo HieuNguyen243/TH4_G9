@@ -4,6 +4,7 @@ import '../views/home/home_screen.dart';
 import '../views/detail/product_detail_screen.dart';
 import '../views/cart/cart_screen.dart';
 import '../views/checkout/checkout_screen.dart';
+import '../views/checkout/order_history_screen.dart';
 
 class AppRoutes {
   // Định nghĩa tên các route (Màn hình) của ứng dụng
@@ -39,9 +40,8 @@ class AppRoutes {
         );
 
       case orders:
-        // TODO: Màn hình đơn hàng thành công (Bạn C làm)
         return MaterialPageRoute(
-          builder: (context) => const Scaffold(body: Center(child: Text('Orders Screen'))),
+          builder: (context) => const OrderHistoryScreen(),
         );
 
       default:

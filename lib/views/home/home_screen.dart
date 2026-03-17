@@ -68,6 +68,12 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
         actions: [
+          // Nút lịch sử đơn hàng
+          IconButton(
+            icon: const Icon(Icons.history_outlined, size: 24),
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.orders),
+          ),
           // Icon giỏ hàng với badge
           Consumer<CartProvider>(
             builder: (context, cart, _) {
