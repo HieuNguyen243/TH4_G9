@@ -68,46 +68,40 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: const TextStyle(
                               fontSize: 10, color: Colors.white),
                         ),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
+                      ),
+                    ),
                 ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFFEE4D2D), Color(0xFFFF7337)],
-                      ),
-                    ),
-                  ),
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(48),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Container(
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Row(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12),
-                            child: Icon(Icons.search, color: Color(0xFFEE4D2D)),
-                          ),
-                          Text('Tìm kiếm trên Shopee', style: TextStyle(color: Colors.grey, fontSize: 14)),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              );
+            },
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
               ),
-
+              child: const Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Icon(Icons.search, color: Color(0xFFEE4D2D)),
+                  ),
+                  Text('Tìm kiếm trên Shopee', style: TextStyle(color: Colors.grey, fontSize: 14)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: Consumer<ProductProvider>(
+        builder: (context, productProvider, _) {
+          return CustomScrollView(
+            slivers: [
               // 2. Banner quảng cáo
               SliverToBoxAdapter(
                 child: Container(
