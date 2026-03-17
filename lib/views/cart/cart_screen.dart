@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cart_provider.dart';
 import '../../models/cart_item_model.dart';
+import '../../routes/app_routes.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -351,7 +352,7 @@ class CartScreen extends StatelessWidget {
               onPressed: selectedCount == 0
                   ? null
                   : () {
-                      Navigator.pushNamed(context, '/checkout');
+                      Navigator.pushNamed(context, AppRoutes.checkout);
                     },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,

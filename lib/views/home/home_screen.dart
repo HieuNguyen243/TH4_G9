@@ -26,36 +26,47 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
-      body: Consumer<ProductProvider>(
-        builder: (context, productProvider, child) {
-          if (productProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: Color(0xFFEE4D2D)));
-          }
-
-          if (productProvider.errorMessage.isNotEmpty) {
-            return Center(child: Text('Lỗi: ${productProvider.errorMessage}'));
-          }
-
-          return CustomScrollView(
-            slivers: [
-              // 1. SliverAppBar với Search Bar dính trên Top
-              SliverAppBar(
-                expandedHeight: 120.0,
-                floating: true,
-                pinned: true,
-                backgroundColor: const Color(0xFFEE4D2D),
-                title: const Text('Shopee Clone', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                actions: [
-                  Consumer<CartProvider>(
-                    builder: (context, cart, _) {
-                      return Badge(
-                        label: Text('${cart.totalQuantity}'),
-                        isLabelVisible: cart.totalQuantity > 0,
-                        backgroundColor: Colors.white,
-                        textColor: const Color(0xFFEE4D2D),
-                        child: IconButton(
-                          icon: const Icon(Icons.shopping_cart_outlined, size: 26, color: Colors.white),
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.cart),
+      appBar: AppBar(
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('🧪 TEST - Giỏ Hàng',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text('(HomeScreen tạm thời)',
+                style: TextStyle(fontSize: 11, color: Colors.white70)),
+          ],
+        ),
+        actions: [
+          // Nút lịch sử đơn hàng
+          IconButton(
+            icon: const Icon(Icons.history_outlined, size: 24),
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.orders),
+          ),
+          // Icon giỏ hàng với badge
+          Consumer<CartProvider>(
+            builder: (context, cart, _) {
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_cart_outlined, size: 28),
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.cart),
+                  ),
+                  if (cart.itemCount > 0)
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: CircleAvatar(
+                        radius: 9,
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          '${cart.itemCount}',
+                          style: const TextStyle(
+                              fontSize: 10, color: Colors.white),
                         ),
                       );
                     },
