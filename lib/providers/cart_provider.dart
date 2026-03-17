@@ -55,21 +55,21 @@ class CartProvider with ChangeNotifier {
   // ─── Logic: Giỏ hàng ─────────────────────────────────────────────────────
 
   /// 1. Thêm sản phẩm vào giỏ hàng
-  void addToCart(ProductModel product) {
+  void addToCart(ProductModel product, {int quantity = 1}) {
     if (_items.containsKey(product.id)) {
-      // Nếu đã có trong giỏ, tăng số lượng
+      // Nếu đã có trong giỏ, tăng số lượng thêm 'quantity' đơn vị
       _items.update(
         product.id,
         (existingItem) => CartItem(
           product: existingItem.product,
-          quantity: existingItem.quantity + 1,
+          quantity: existingItem.quantity + quantity,
         ),
       );
     } else {
-      // Nếu chưa có, thêm mới và TỰ ĐỘNG tích checkbox
+      // Nếu chưa có, thêm mới với số lượng 'quantity' và TỰ ĐỘNG tích checkbox
       _items.putIfAbsent(
         product.id,
-        () => CartItem(product: product),
+        () => CartItem(product: product, quantity: quantity),
       );
       _selectedIds.add(product.id); // Auto-select sản phẩm mới thêm
     }

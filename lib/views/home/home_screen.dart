@@ -1,55 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../providers/product_provider.dart';
 import '../../providers/cart_provider.dart';
-import '../../models/product_model.dart';
 import '../../routes/app_routes.dart';
+import '../../widgets/product_card.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  // Dữ liệu giả để test CartScreen
-  static final List<ProductModel> _mockProducts = [
-    ProductModel(
-      id: 1,
-      title: 'Áo thun nam basic',
-      price: 19.99,
-      description: 'Test sản phẩm 1',
-      category: 'clothing',
-      image:
-          'https://fakestoreapi.com/img/81fAn-9N95L._AC_UY879_.jpg',
-      rating: Rating(rate: 4.5, count: 100),
-    ),
-    ProductModel(
-      id: 2,
-      title: 'Quần jean slim fit',
-      price: 55.99,
-      description: 'Test sản phẩm 2',
-      category: 'clothing',
-      image:
-          'https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg',
-      rating: Rating(rate: 3.9, count: 200),
-    ),
-    ProductModel(
-      id: 3,
-      title: 'Giày sneaker trắng',
-      price: 109.95,
-      description: 'Test sản phẩm 3',
-      category: 'shoes',
-      image:
-          'https://fakestoreapi.com/img/71pWzhdJNwL._AC_UL640_FMwebp_QL65_.jpg',
-      rating: Rating(rate: 4.8, count: 50),
-    ),
-    ProductModel(
-      id: 4,
-      title: 'Túi xách nữ cao cấp',
-      price: 75.00,
-      description: 'Test sản phẩm 4',
-      category: 'bags',
-      image:
-          'https://fakestoreapi.com/img/81QpkIctqPL._AC_SX679_.jpg',
-      rating: Rating(rate: 4.1, count: 320),
-    ),
-  ];
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Gọi API khi màn hình khởi tạo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProductProvider>().fetchAndSetProducts();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,178 +68,111 @@ class HomeScreen extends StatelessWidget {
                           style: const TextStyle(
                               fontSize: 10, color: Colors.white),
                         ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFFEE4D2D), Color(0xFFFF7337)],
                       ),
                     ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Banner hướng dẫn test
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            color: Colors.orange[50],
-            child: Row(
-              children: [
-                const Icon(Icons.info_outline, color: Colors.orange, size: 18),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Bấm "+ Giỏ" rồi nhấn icon giỏ hàng để test CartScreen.',
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.orange[800],
-                        fontStyle: FontStyle.italic),
                   ),
                 ),
-              ],
-            ),
-          ),
-
-          // Danh sách sản phẩm test
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(12),
-              itemCount: _mockProducts.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
-              itemBuilder: (context, i) {
-                final product = _mockProducts[i];
-                return _ProductTestCard(product: product);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Widget card sản phẩm cho bàn test
-// ──────────────────────────────────────────────────────────────────────────────
-class _ProductTestCard extends StatelessWidget {
-  final ProductModel product;
-  const _ProductTestCard({required this.product});
-
-  @override
-  Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
-    final inCart = cart.items.containsKey(product.id);
-    final qty = cart.items[product.id]?.quantity ?? 0;
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: inCart ? Colors.orange.withValues(alpha: 0.5) : Colors.transparent,
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Ảnh sản phẩm
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              product.image,
-              width: 65,
-              height: 65,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => Container(
-                width: 65,
-                height: 65,
-                color: Colors.grey[200],
-                child: const Icon(Icons.image_not_supported),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-
-          // Thông tin
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  product.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                      fontSize: 13, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  product.formattedPrice,
-                  style: const TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-
-          // Nút thêm vào giỏ + badge số lượng
-          Column(
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  cart.addToCart(product);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('✅ Đã thêm "${product.title}"'),
-                      duration: const Duration(milliseconds: 1200),
-                      backgroundColor: Colors.green[600],
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(48),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Row(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 12),
+                            child: Icon(Icons.search, color: Color(0xFFEE4D2D)),
+                          ),
+                          Text('Tìm kiếm trên Shopee', style: TextStyle(color: Colors.grey, fontSize: 14)),
+                        ],
+                      ),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6)),
+                  ),
                 ),
-                child: const Text('+ Giỏ',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
               ),
-              if (inCart)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
+
+              // 2. Banner quảng cáo
+              SliverToBoxAdapter(
+                child: Container(
+                  height: 180,
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    image: const DecorationImage(
+                      image: NetworkImage('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&q=80'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.orange[100],
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomRight,
+                        colors: [Colors.black.withOpacity(0.4), Colors.transparent],
+                      ),
                     ),
-                    child: Text(
-                      'Đã có: $qty',
-                      style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.orange[800],
-                          fontWeight: FontWeight.w600),
+                    alignment: Alignment.bottomLeft,
+                    padding: const EdgeInsets.all(16),
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Siêu Sale 12.12', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                        Text('Giảm giá lên đến 50%', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      ],
                     ),
                   ),
                 ),
+              ),
+
+              // Danh mục hoặc Tiêu đề danh sách
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text('GỢI Ý HÔM NAY', style: TextStyle(color: Color(0xFFEE4D2D), fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              ),
+
+              // 3. GridView 2 cột hiển thị sản phẩm
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 0.72,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return ProductCard(product: productProvider.products[index]);
+                    },
+                    childCount: productProvider.products.length,
+                  ),
+                ),
+              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 20)),
             ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }
