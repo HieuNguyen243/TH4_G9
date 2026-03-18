@@ -141,12 +141,44 @@ class _AddToCartBottomSheet extends StatefulWidget {
 }
 
 class _AddToCartBottomSheetState extends State<_AddToCartBottomSheet> {
-  String selectedSize = 'M';
-  String selectedColor = 'Trắng';
+  String? selectedOption1; // Size cho quần áo, Phiên bản cho đồ điện tử
+  String? selectedOption2; // Màu sắc cho cả hai
   int quantity = 1;
 
-  final List<String> sizes = ['S', 'M', 'L', 'XL'];
-  final List<String> colors = ['Trắng', 'Đen', 'Xanh', 'Đỏ'];
+  late List<String> options1;
+  late List<String> options2;
+  late String label1;
+  late String label2;
+
+  @override
+  void initState() {
+    super.initState();
+    // Phân loại dựa trên category
+    String category = widget.product.category.toLowerCase();
+    
+    if (category.contains('clothing') || category.contains('men') || category.contains('women')) {
+      // Nhóm Quần áo
+      label1 = 'Kích cỡ (Size)';
+      options1 = ['S', 'M', 'L', 'XL'];
+      label2 = 'Màu sắc';
+      options2 = ['Trắng', 'Đen', 'Xanh', 'Đỏ'];
+    } else if (category.contains('electronics')) {
+      // Nhóm Đồ điện tử
+      label1 = 'Phiên bản (Dung lượng)';
+      options1 = ['128GB', '256GB', '512GB', '1TB'];
+      label2 = 'Màu sắc thiết bị';
+      options2 = ['Bạc (Silver)', 'Xám (Space Gray)', 'Vàng (Gold)', 'Xanh'];
+    } else {
+      // Mặc định (cho các loại khác như túi xách, giày dép...)
+      label1 = 'Tùy chọn';
+      options1 = ['Tiêu chuẩn'];
+      label2 = 'Màu sắc';
+      options2 = ['Mặc định'];
+    }
+    
+    selectedOption1 = options1[0];
+    selectedOption2 = options2[0];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,32 +222,42 @@ class _AddToCartBottomSheetState extends State<_AddToCartBottomSheet> {
             ],
           ),
           const Divider(),
-          const Text('Size', style: TextStyle(fontWeight: FontWeight.bold)),
+          
+          // Lựa chọn 1 (Size hoặc Dung lượng)
+          Text(label1, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
-            children: sizes.map((s) => ChoiceChip(
-              label: Text(s),
-              selected: selectedSize == s,
-              onSelected: (_) => setState(() => selectedSize = s),
+            children: options1.map((opt) => ChoiceChip(
+              label: Text(opt),
+              selected: selectedOption1 == opt,
+              onSelected: (_) => setState(() => selectedOption1 = opt),
               selectedColor: const Color(0xFFEE4D2D).withOpacity(0.1),
-              labelStyle: TextStyle(color: selectedSize == s ? const Color(0xFFEE4D2D) : Colors.black),
+              labelStyle: TextStyle(color: selectedOption1 == opt ? const Color(0xFFEE4D2D) : Colors.black),
               showCheckmark: false,
             )).toList(),
           ),
+          
           const SizedBox(height: 16),
-          const Text('Màu sắc', style: TextStyle(fontWeight: FontWeight.bold)),
+          
+          // Lựa chọn 2 (Màu sắc)
+          Text(label2, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
-            children: colors.map((c) => ChoiceChip(
-              label: Text(c),
-              selected: selectedColor == c,
-              onSelected: (_) => setState(() => selectedColor = c),
+            children: options2.map((opt) => ChoiceChip(
+              label: Text(opt),
+              selected: selectedOption2 == opt,
+              onSelected: (_) => setState(() => selectedOption2 = opt),
               selectedColor: const Color(0xFFEE4D2D).withOpacity(0.1),
-              labelStyle: TextStyle(color: selectedColor == c ? const Color(0xFFEE4D2D) : Colors.black),
+              labelStyle: TextStyle(color: selectedOption2 == opt ? const Color(0xFFEE4D2D) : Colors.black),
               showCheckmark: false,
             )).toList(),
           ),
+          
           const SizedBox(height: 16),
+          
+          // Số lượng
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -229,7 +271,9 @@ class _AddToCartBottomSheetState extends State<_AddToCartBottomSheet> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+          
+          // Nút xác nhận
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -243,7 +287,7 @@ class _AddToCartBottomSheetState extends State<_AddToCartBottomSheet> {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Đã thêm $quantity x ${widget.product.title} vào giỏ!'),
+                    content: Text('Đã thêm $quantity x ${widget.product.title} ($selectedOption1, $selectedOption2) vào giỏ!'),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
                   ),
